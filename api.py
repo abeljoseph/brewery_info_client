@@ -10,6 +10,7 @@ from requests.exceptions import RequestException
 logger = logging.getLogger("brew")
 logger.setLevel(logging.DEBUG)
 
+
 class BrewAPI:
     def __init__(self):
         self.base_path = "https://api.openbrewerydb.org/v1/breweries/"
@@ -81,6 +82,7 @@ class GetSingleBrewery(BrewAPI):
         response_json = response.json()
 
         return BreweryInfo.model_validate(response_json)
+
 
 class GetBreweryList(BrewAPI):
     def __call__(self, **kwargs) -> list[BreweryInfo]:
