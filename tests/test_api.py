@@ -1,9 +1,13 @@
+import logging
+
 from api import BreweryInfo, GetSingleBrewery, GetBreweryList
 
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 class TestAPI:
-    def __init__(self):
-        self.test_data = [
+    def setup_method(self):
+        test_data = [
             {
                 'id': '5128df48-79fc-4f0f-8b52-d06be54d0cec',
                 'name': '(405) Brewing Co',
@@ -52,5 +56,36 @@ class TestAPI:
             },
         ]
 
-    def test_print(self):
-        print("testing")
+        self.test_data = [BreweryInfo.model_validate(x) for x in test_data]
+
+    def test_single(self):
+        gsb = GetSingleBrewery()
+
+        for brewery in self.test_data:
+            brew_id = brewery.id
+            
+            out = gsb(brew_id)
+            assert BreweryInfo.model_validate(out) == brewery
+            logger.info("Success for brewery ID: %s", brew_id)  # TODO: add handler
+
+    def test_list_by_ids(self):
+        ids = [x.id for x in self.test_data]
+        
+        gbl = GetBreweryList()
+        out = gbl(by_ids=ids)
+
+        for brew_info in out:
+            bi = BreweryInfo.model_validate(brew_info)
+            assert bi in self.test_data
+
+    def test_list_by_dist(self):
+        lat_long_pairs = [
+            (i, (x.latitude, x.longitude))
+            for i, x in enumerate(self.test_data) if (x.longitude and x.latitude)
+        ]
+
+        for i, pair in lat_long_pairs:
+            gbl = GetBreweryList()
+            out = gbl(by_dist=pair, per_page=3)
+
+            assert self.test_data[i] in [BreweryInfo.model_validate(x) for x in out]

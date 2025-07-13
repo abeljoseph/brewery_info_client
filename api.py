@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, field_serializer
 from requests import Response
 from requests.exceptions import RequestException
 
-logger = logging.getLogger("brew")
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 
