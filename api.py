@@ -30,6 +30,7 @@ class BrewAPI:
 class BreweryInfo(BaseModel):
     """Define base class for brewery info (returned by API)
     NB: may need to make some more of these optional"""
+
     id: str
     name: str
     brewery_type: str
@@ -48,11 +49,23 @@ class BreweryInfo(BaseModel):
     street: str | None = None
 
 
-BreweryType = Literal["micro", "nano", "regional", "brewpub", "large", "planning", "bar", "contract", "proprietor", "closed"]
+BreweryType = Literal[
+    "micro",
+    "nano",
+    "regional",
+    "brewpub",
+    "large",
+    "planning",
+    "bar",
+    "contract",
+    "proprietor",
+    "closed",
+]
 
 
 class BreweryParams(BaseModel):
     """Define base class for brewery API call params"""
+
     per_page: int | None = None
     by_city: str | None = None
     by_country: str | None = None
@@ -65,10 +78,10 @@ class BreweryParams(BaseModel):
 
     @field_serializer("by_dist", when_used="always")
     def serialize_by_dist(self, by_dist):
-        if by_dist is None: 
+        if by_dist is None:
             return None
         return f"{by_dist[0]},{by_dist[1]}"
-    
+
     @field_serializer("by_ids", when_used="always")
     def serialize_by_ids(self, by_ids):
         if by_ids is None:
